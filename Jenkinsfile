@@ -3,6 +3,8 @@ node
 
      def mavenHome = tool name: "maven 3.8.2"	
 
+     properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5')), pipelineTriggers([pollSCM('* * * * *')])])
+	
      stage('CodeCheckOut') {
      git branch: 'master', credentialsId: 'c5c1b999-d4dc-41f1-b5d1-c44b6accd42b', url: 'https://github.com/srss-devops-project/maven-web-application.git'
 	}
