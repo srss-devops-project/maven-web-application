@@ -18,14 +18,14 @@ node
 	}
      
      stage('UploadArtifactsIntoNexusRepository'){
-     sh "${mavenHome}/bin/mvn clean sonar:sonar deploy"
+     sh "${mavenHome}/bin/mvn clean deploy"
 	}
      
      stage('DeployTheAppIntoTomcat'){
      sshagent(['5808d159-dfe3-435a-bd63-9db7ba40e096']) {
      sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@13.233.128.232:/opt/apache-tomcat-9.0.53/webapps/"
 	} 
-	}
+	 }
      /*
      stage('EmailNotification'){
      mail bcc: 'gsrinivasulu053@gmail.com', body: '''Build Over!!
