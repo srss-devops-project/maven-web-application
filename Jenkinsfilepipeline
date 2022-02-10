@@ -1,0 +1,36 @@
+node
+{
+
+     def mavenHome = tool name: "maven 3.8.2"	
+
+     properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '3')), [$class: 'JobLocalConfiguration', changeReasonComment: '']])    
+
+     stage('CodeCheckOut') {
+     git branch: 'master', credentialsId: 'f9299425-44f3-45be-8972-373a0ad4a7f6', url: 'https://github.com/srss-devops-project/maven-web-application.git'
+	}
+     
+     stage('Build'){
+     sh "${mavenHome}/bin/mvn clean package"
+	}
+     
+     stage('ExecutingSonarQubeReport'){
+     sh "${mavenHome}/bin/mvn clean sonar:sonar"
+	}
+     
+     stage('UploadArtifactsIntoNexusRepository'){
+     sh "${mavenHome}/bin/mvn clean deploy"
+	}
+     
+     stage('DeployTheAppIntoTomcat'){
+     sshagent(['4545d1be-2819-47ad-8405-f2dcf8c514d0']) {
+     sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war  ec2-user@13.234.136.180:/opt/apache-tomcat-9.0.58/webapps"
+        }
+        }
+
+     stage('E-mail Notification'){
+     mail bcc: 'ganugasrinu96@gmail.com', body: '''build over
+
+     regards,
+     SSS.''', cc: 'ganugasrinu96@gmail.com', from: '', replyTo: '', subject: 'Build Over!1', to: 'ganugasrinu96@gmail.com'
+        }
+ }
